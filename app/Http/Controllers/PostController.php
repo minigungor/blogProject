@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Post;
 use Illuminate\Http\Request;
 
@@ -12,7 +13,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::query()->get();
+        $posts = Post::with('category')->get();
         return view('post.index', ['posts' => $posts]);
     }
 
@@ -21,7 +22,8 @@ class PostController extends Controller
      */
     public function create()
     {
-        return view('post.create');
+        $categories = Category::all();
+        return view('post.create', ['categories' => $categories]);
     }
 
     /**
@@ -32,9 +34,11 @@ class PostController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
+            'category_id' => 'required|exists:categories,id',
         ]);
         Post::create($validated);
-        return $this->index();
+        return redirect()->route('posts.index')
+            ->with('success', 'Post created successfully.');
     }
 
     /**
@@ -50,7 +54,8 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        return view('post.edit', compact('post'));
+        $categories = Category::all();
+        return view('post.edit', compact('post', 'categories'));
     }
 
     /**
@@ -61,9 +66,11 @@ class PostController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
+            'category_id' => 'required|exists:categories,id',
         ]);
         $post->update($validated);
-        return $this->index();
+        return redirect()->route('posts.index')
+            ->with('success', 'Post updated successfully.');
     }
 
     /**
@@ -72,6 +79,7 @@ class PostController extends Controller
     public function destroy(Post $post)
     {
         $post->delete();
-        return $this->index();
+        return redirect()->route('posts.index')
+            ->with('success', 'Post deleted successfully.');
     }
 }
