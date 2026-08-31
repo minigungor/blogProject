@@ -15,6 +15,15 @@
             </option>
         @endforeach
     </select>
+    <label for="tags">Tags:</label>
+    <select name="tag_ids[]" id="tags" multiple>
+        @foreach ($tags as $tag)
+            <option value="{{ $tag->id }}" 
+                @if(in_array($tag->id, old('tag_ids', $post->tags->pluck('id')->toArray()))) selected @endif>
+                {{ $tag->name }}
+            </option>
+        @endforeach
+    </select>
     <button type="submit">Update</button>
 </form>
 @endsection

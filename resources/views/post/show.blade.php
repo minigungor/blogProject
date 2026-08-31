@@ -10,6 +10,13 @@
             <em>Category deleted</em>
         @endif
     </p>
+    <p>Tags: 
+        @forelse ($post->tags as $tag)
+            {{ $tag->name }}{{ !$loop->last ? ', ' : '' }}
+        @empty
+            <em>No tags</em>
+        @endforelse
+    </p>
     <p>{{ $post->content }}</p>
     <a href="{{ route('posts.index') }}">Go to posts</a>
 @endsection

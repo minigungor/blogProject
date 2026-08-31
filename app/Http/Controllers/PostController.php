@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Post;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -13,7 +14,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::with('category')->get();
+        $posts = Post::with('category', 'tags')->get();
         return view('post.index', ['posts' => $posts]);
     }
 
@@ -23,7 +24,8 @@ class PostController extends Controller
     public function create()
     {
         $categories = Category::all();
-        return view('post.create', ['categories' => $categories]);
+        $tags = Tag::all();
+        return view('post.create', ['categories' => $categories, 'tags' => $tags]);
     }
 
     /**
@@ -36,7 +38,8 @@ class PostController extends Controller
             'content' => 'required|string',
             'category_id' => 'required|exists:categories,id',
         ]);
-        Post::create($validated);
+        $post = Post::create($validated);
+        $post->tags()->attach($request->input('tag_ids'));
         return redirect()->route('posts.index')
             ->with('success', 'Post created successfully.');
     }
@@ -55,7 +58,8 @@ class PostController extends Controller
     public function edit(Post $post)
     {
         $categories = Category::all();
-        return view('post.edit', compact('post', 'categories'));
+        $tags = Tag::all();
+        return view('post.edit', compact('post', 'categories', 'tags'));
     }
 
     /**
@@ -69,6 +73,7 @@ class PostController extends Controller
             'category_id' => 'required|exists:categories,id',
         ]);
         $post->update($validated);
+        $post->tags()->sync($request->input('tag_ids'));
         return redirect()->route('posts.index')
             ->with('success', 'Post updated successfully.');
     }
