@@ -29,4 +29,10 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public $fillable = [
+        'name',
+        'email',
+        'password'
+    ];
 }
