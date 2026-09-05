@@ -38,6 +38,7 @@ class PostController extends Controller
             'content' => 'required|string',
             'category_id' => 'required|exists:categories,id',
         ]);
+        $validated['user_id'] = auth()->id();
         $post = Post::create($validated);
         $post->tags()->attach($request->input('tag_ids'));
         return redirect()->route('posts.index')
@@ -72,6 +73,7 @@ class PostController extends Controller
             'content' => 'required|string',
             'category_id' => 'required|exists:categories,id',
         ]);
+        $validated['user_id'] = auth()->id();
         $post->update($validated);
         $post->tags()->sync($request->input('tag_ids'));
         return redirect()->route('posts.index')

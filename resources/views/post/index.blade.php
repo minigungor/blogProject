@@ -5,6 +5,7 @@
         <div class="post">
                 <h3>{{ $post->title }}</h3>
                 <h5>{{ $post->updated_at }}</h5>
+                <h6>Author:{{ $post->user->name }} {{ $post->user->email }}</h6>
                 <p>Category: 
                     @if ($post->category)
                         {{ $post->category->name }}
